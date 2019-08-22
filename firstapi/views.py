@@ -7,6 +7,8 @@ import json
 from django.http import JsonResponse
 from rest_framework.views import  APIView
 from firstapi.models import UserInfo, UserToken
+from firstapi.utils.auth import Authencation
+from firstapi.utils.my_permission import SVIPPermission,GeneralPermission
 
 def md5(user):
     import hashlib
@@ -17,19 +19,9 @@ def md5(user):
 
     return m.hexdigest()
 
-# class Authencation(object):
-#     def authenticate(self,request):
-#         token = request._request.GET.get("token")
-#         user_token = UserToken.objects.filter(token=token).first()
-#         if not user_token:
-#             raise exceptions.AuthenticationFailed("验证失败")
-#         return (user_token.user,user_token)
-#
-#     def authenticate_header(self,request):
-#         pass
-
 class OrderView(APIView):
     # authentication_classes = [Authencation,]
+    # permission_classes = [SVIPPermission,]
     def post(self,request,*args,**kwargs):
         print(request.user)
         print(request.auth)
@@ -39,6 +31,7 @@ class OrderView(APIView):
 # Create your views here.
 class AuthView(APIView):
     authentication_classes = [] #赋空列表就不会再使用配置文件里的默认认证了
+    permission_classes = [] #赋空列表就不会再使用配置文件里的默认权限设置了
     def get(self,request,*args,**kwargs):
         user = request.GET.get("username")
         pwd = request.GET.get("password")

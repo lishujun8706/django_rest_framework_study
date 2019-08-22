@@ -136,5 +136,6 @@ UESR_SESSION_KEY = 'KM*7^%#df#ejFR%):;.,<'
 #rest framework authenticate认证
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES":["firstapi.util.Authencation",]
+    "DEFAULT_AUTHENTICATION_CLASSES":["firstapi.utils.auth.Authencation",],
+    "DEFAULT_PERMISSION_CLASSES":["firstapi.utils.my_permission.SVIPPermission","firstapi.utils.my_permission.GeneralPermission"],
 }
