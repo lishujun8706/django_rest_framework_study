@@ -7,7 +7,7 @@ import json
 from django.http import JsonResponse
 from rest_framework.views import  APIView
 from firstapi.models import UserInfo, UserToken
-from firstapi.utils.auth import Authencation
+from firstapi.utils.auth import Authencation,SessionAuth
 from firstapi.utils.my_permission import SVIPPermission,GeneralPermission
 
 def md5(user):
@@ -25,8 +25,44 @@ class OrderView(APIView):
     def post(self,request,*args,**kwargs):
         print(request.user)
         print(request.auth)
-        return JsonResponse({"code":1000,"msg":"","data":""})
+        return JsonResponse({"code":1000,"msg":"order view","data":""})
 
+class TestView(APIView):
+    # authentication_classes = [SessionAuth,]
+    # permission_classes = []
+    def get(self,request,*args,**kwargs):
+        print("验证成功",request.user)
+        return HttpResponse(json.dumps({"code":1000,"msg":"test view","data":""}))
+
+class UserLogin(APIView):
+    authentication_classes = []
+    permission_classes = []
+    def get(self,request,*args,**kwargs):
+        try:
+            username = request.GET.get("username",None)
+            password = request.GET.get("password", None)
+            usertype = request.GET.get("usertype", None)
+            user = UserInfo.objects.update_or_create(username=username,defaults={"password":password,"user_type":int(usertype)})
+            user = user[0]
+            print(user.user_type)
+            request.session[settings.UESR_SESSION_KEY] = user.id
+            return HttpResponse(json.dumps({"code":1000,"msg":"success login","data":""}))
+        except Exception as e:
+            print(e)
+            return HttpResponse(json.dumps({"code": 1001, "msg": "failed login", "data": ""}))
+
+    def post(self,request,*args,**kwargs):
+        try:
+            username = request.POST.get("username",None)
+            password = request.POST.get("password", None)
+            usertype = request.POST.get("usertype", None)
+            user = UserInfo.objects.update_or_create(username=username,defaults={"password":password,"user_type":int(usertype)})
+            user = user[0]
+            request.session[settings.UESR_SESSION_KEY] = user.id
+            return JsonResponse({"code": 1000, "msg": "success login", "data": ""})
+        except Exception as e:
+            print(e)
+            return JsonResponse({"code": 1001, "msg": "failed login", "data": ""})
 
 # Create your views here.
 class AuthView(APIView):
@@ -43,11 +79,12 @@ class AuthView(APIView):
             # request.session["test3"] = "test3"
             #可存储多个key，但是都属于同一个用户；一个用户可以有多个session key
             print(request.session.keys())
+            print(obj)
             print(request.session[settings.UESR_SESSION_KEY])
         else:
             request.session[settings.UESR_SESSION_KEY] = obj.id
         #############################################
-        return JsonResponse({"code":1000,"msg":"good","data":None})
+        return HttpResponse(json.dumps({"code":1000,"msg":"good","data":None}))
 
     def post(self,request,*args,**kwargs):
         ret = {"code":1000,"msg":None}

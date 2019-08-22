@@ -13,3 +13,14 @@ class Authencation(BaseAuthentication):
 
     def authenticate_header(self,request):
         pass
+
+class SessionAuth(BaseAuthentication):
+    def authenticate(self,request):
+        userid = request.session[settings.UESR_SESSION_KEY]
+        user = UserInfo.objects.filter(id=userid).first()
+        if not user:
+            raise exceptions.AuthenticationFailed("验证失败")
+        return (user,user.usertoken)
+
+    def authenticate_header(self,request):
+        pass
