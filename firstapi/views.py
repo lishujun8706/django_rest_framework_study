@@ -9,6 +9,7 @@ from rest_framework.views import  APIView
 from firstapi.models import UserInfo, UserToken
 from firstapi.utils.auth import Authencation,SessionAuth
 from firstapi.utils.my_permission import SVIPPermission,GeneralPermission
+from firstapi.utils.my_throttling import DefineThrottling
 
 def md5(user):
     import hashlib
@@ -30,8 +31,9 @@ class OrderView(APIView):
 class TestView(APIView):
     # authentication_classes = [SessionAuth,]
     # permission_classes = []
+    throttle_classes = [DefineThrottling,]
     def get(self,request,*args,**kwargs):
-        print("验证成功",request.user)
+        print("验证成功",request.user,request.auth.token)
         return HttpResponse(json.dumps({"code":1000,"msg":"test view","data":""}))
 
 class UserLogin(APIView):
