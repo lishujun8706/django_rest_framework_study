@@ -85,7 +85,7 @@ class AuthView(APIView):
             print(request.session.keys())
             print(obj)
             print(request.session[settings.UESR_SESSION_KEY])
-            print('.....>>>>',request.version)
+            print('.....>>>>>',request.version)
             #print('.....>>>>',version)
         else:
             request.session[settings.UESR_SESSION_KEY] = obj.id
