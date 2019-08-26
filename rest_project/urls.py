@@ -20,5 +20,5 @@ from django.conf.urls import url,include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url('^api/v1/',include('firstapi.urls')),
+    url('^api/(?P<version>v[0-9]{1,2})/',include('firstapi.urls')),
 ]

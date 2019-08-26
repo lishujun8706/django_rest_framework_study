@@ -10,6 +10,7 @@ from firstapi.models import UserInfo, UserToken
 from firstapi.utils.auth import Authencation,SessionAuth
 from firstapi.utils.my_permission import SVIPPermission,GeneralPermission
 from firstapi.utils.my_throttling import DefineThrottling
+from rest_framework.versioning import URLPathVersioning
 
 def md5(user):
     import hashlib
@@ -70,6 +71,7 @@ class UserLogin(APIView):
 class AuthView(APIView):
     authentication_classes = [] #赋空列表就不会再使用配置文件里的默认认证了
     permission_classes = [] #赋空列表就不会再使用配置文件里的默认权限设置了
+    versioning_class = URLPathVersioning
     def get(self,request,*args,**kwargs):
         user = request.GET.get("username")
         pwd = request.GET.get("password")
@@ -83,6 +85,8 @@ class AuthView(APIView):
             print(request.session.keys())
             print(obj)
             print(request.session[settings.UESR_SESSION_KEY])
+            print('.....>>>>',request.version)
+            #print('.....>>>>',version)
         else:
             request.session[settings.UESR_SESSION_KEY] = obj.id
         #############################################

@@ -140,4 +140,8 @@ REST_FRAMEWORK = {
     "UNAUTHENTICATED_USER":None,#request.user = None
     "UNAUTHENTICATED_TOKEN":None,#request.auth = None
     "DEFAULT_PERMISSION_CLASSES":["firstapi.utils.my_permission.SVIPPermission",],
+    #"DEFAULT_VERSIONING_CLASS":["rest_framework.versioning.URLPathVersioning",],
+    "DEFAULT_VERSION":'v1',
+    "VERSION_PARAM":'version',
+    "ALLOWED_VERSIONS":['v1','v2'],
 }
