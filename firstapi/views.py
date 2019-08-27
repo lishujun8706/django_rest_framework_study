@@ -6,11 +6,12 @@ from django.http.response import HttpResponse,HttpResponseRedirect
 import json
 from django.http import JsonResponse
 from rest_framework.views import  APIView
-from firstapi.models import UserInfo, UserToken
+from firstapi.models import UserInfo, UserToken, Role,UserGroup
 from firstapi.utils.auth import Authencation,SessionAuth
 from firstapi.utils.my_permission import SVIPPermission,GeneralPermission
 from firstapi.utils.my_throttling import DefineThrottling
 from rest_framework.versioning import URLPathVersioning
+from rest_framework.parsers import JSONParser,FormParser
 
 def md5(user):
     import hashlib
@@ -72,6 +73,7 @@ class AuthView(APIView):
     authentication_classes = [] #赋空列表就不会再使用配置文件里的默认认证了
     permission_classes = [] #赋空列表就不会再使用配置文件里的默认权限设置了
     versioning_class = URLPathVersioning
+    parser_classes = [JSONParser,FormParser]
     def get(self,request,*args,**kwargs):
         user = request.GET.get("username")
         pwd = request.GET.get("password")
@@ -111,3 +113,44 @@ class AuthView(APIView):
             return JsonResponse(ret)
 
         return JsonResponse(ret)
+
+
+
+#########################################################
+from rest_framework import serializers
+
+class RoleSerialize(serializers.Serializer):
+    title = serializers.CharField()
+
+class RoleView(APIView):
+    authentication_classes = []
+    permission_classes = []
+    def get(self,request,*args,**kwargs):
+        roles = Role.objects.all()
+        ret = RoleSerialize(instance=roles,many=True)
+        ret = json.dumps(ret.data,ensure_ascii=False)
+        print(":::::::::::::::>>>>",ret)
+        return HttpResponse(ret)
+
+class UserInfoSerialize(serializers.Serializer):
+    username = serializers.CharField()
+    usertype = serializers.CharField(source="get_user_type_display")
+    typeid = serializers.CharField(source="user_type")
+    group = serializers.CharField(source="group.title")
+    rsl = serializers.SerializerMethodField()
+
+    def get_rsl(self,row):
+        rol_obj_list = row.role.all()
+        ret = []
+        for item in rol_obj_list:
+            ret.append({"id":item.id,"title":item.title})
+        return ret
+
+class UserInfoView(APIView):
+    authentication_classes = []
+    permission_classes = []
+    def get(self,*args,**kwargs):
+        users = UserInfo.objects.all()
+        ret = UserInfoSerialize(instance=users,many=True)
+        ret = json.dumps(ret.data,ensure_ascii=False)
+        return HttpResponse(ret)
