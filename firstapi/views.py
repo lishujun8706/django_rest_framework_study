@@ -33,7 +33,7 @@ class OrderView(APIView):
 class TestView(APIView):
     # authentication_classes = [SessionAuth,]
     # permission_classes = []
-    throttle_classes = [DefineThrottling,]
+    throttle_classes = [DefineThrottling,] #设置访问频率
     def get(self,request,*args,**kwargs):
         print("验证成功",request.user,request.auth.token)
         return HttpResponse(json.dumps({"code":1000,"msg":"test view","data":""}))
@@ -72,8 +72,9 @@ class UserLogin(APIView):
 class AuthView(APIView):
     authentication_classes = [] #赋空列表就不会再使用配置文件里的默认认证了
     permission_classes = [] #赋空列表就不会再使用配置文件里的默认权限设置了
-    versioning_class = URLPathVersioning
-    parser_classes = [JSONParser,FormParser]
+    versioning_class = URLPathVersioning #版本控制，通过request.version获取版本，需要在url路由中添加正则配合
+    parser_classes = [JSONParser,FormParser] #解析类，通过request.data获取请求数据，解决request.body和request.post的问题
+    throttle_classes = [DefineThrottling, ]  # 设置访问频率
     def get(self,request,*args,**kwargs):
         user = request.GET.get("username")
         pwd = request.GET.get("password")
@@ -149,6 +150,7 @@ class UserInfoSerialize(serializers.Serializer):
 class UserInfoSerialize(serializers.ModelSerializer):
     class Meta:
         model = UserInfo
+        #fields = "__all__"
         fields = ["id","username","password","group","role"]
         depth =1
 
