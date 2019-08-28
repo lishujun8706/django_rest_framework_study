@@ -131,8 +131,8 @@ class RoleView(APIView):
         ret = json.dumps(ret.data,ensure_ascii=False)
         print("::::::::::::::::>>>>",ret)
         return HttpResponse(ret)
-
-'''class UserInfoSerialize(serializers.Serializer):
+'''
+class UserInfoSerialize(serializers.Serializer):
     username = serializers.CharField()
     usertype = serializers.CharField(source="get_user_type_display")
     typeid = serializers.CharField(source="user_type")
@@ -144,7 +144,8 @@ class RoleView(APIView):
         ret = []
         for item in rol_obj_list:
             ret.append({"id":item.id,"title":item.title})
-        return ret'''
+        return ret
+'''
 class UserInfoSerialize(serializers.ModelSerializer):
     class Meta:
         model = UserInfo
