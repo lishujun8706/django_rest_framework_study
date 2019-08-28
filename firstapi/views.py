@@ -129,7 +129,7 @@ class RoleView(APIView):
         roles = Role.objects.all()
         ret = RoleSerialize(instance=roles,many=True)
         ret = json.dumps(ret.data,ensure_ascii=False)
-        print(":::::::::::::::>>>>",ret)
+        print("::::::::::::::::>>>>",ret)
         return HttpResponse(ret)
 
 class UserInfoSerialize(serializers.Serializer):
