@@ -186,3 +186,24 @@ class GroupInfoView(APIView):
         ret_data = GroupSerialize(instance=obj, many=False)
         ret = json.dumps(ret_data.data,ensure_ascii=False)
         return HttpResponse(ret)
+
+###################数据验证测试#################
+class UserGroupVerify(serializers.Serializer):
+    title = serializers.CharField(error_messages={'required':"请务必填写次内容"})
+    #通过钩子函数自定定义数据验证
+    def validate_title(self,value):
+        if not value.startswith("pwd"):
+            raise serializers.ValidationError("self define validate function.......")
+        return value
+
+class UserGroupView(APIView):
+    authentication_classes = []
+    permission_classes = []
+    def post(self,request,*args,**kwargs):
+        requir_data = request.data
+        ser = UserGroupVerify(data=requir_data)
+        if ser.is_valid():
+            print('ttttttttt',ser.validated_data)
+        else:
+            print(ser.errors)
+        return HttpResponse({"mesg":'test'})
