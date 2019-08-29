@@ -148,17 +148,41 @@ class UserInfoSerialize(serializers.Serializer):
         return ret
 '''
 class UserInfoSerialize(serializers.ModelSerializer):
+    #添加自动生成url地址，设置步骤：
+    # 1. url中设置正则匹配，如xxx
+    # 2. serialize类中添加Hyperlinkxxxxxxx属性变量
+    # 3. view视图中的序列化要添加 context={'request':request}
+    # 4. fields中的名称与Hyperlinkxxxxx变量名一致
+    tatata = serializers.HyperlinkedIdentityField(view_name='group_link',lookup_field='group_id',lookup_url_kwarg='xxx')
     class Meta:
         model = UserInfo
         #fields = "__all__"
-        fields = ["id","username","password","group","role"]
-        depth =1
+        fields = ["id","username","password","tatata","role"]
+        depth =0
 
 class UserInfoView(APIView):
     authentication_classes = []
     permission_classes = []
-    def get(self,*args,**kwargs):
+    def get(self,request,*args,**kwargs):
         users = UserInfo.objects.all()
-        ret = UserInfoSerialize(instance=users,many=True)
+        ret = UserInfoSerialize(instance=users,many=True,context={'request':request})
         ret = json.dumps(ret.data,ensure_ascii=False)
+        return HttpResponse(ret)
+
+class GroupSerialize(serializers.ModelSerializer):
+    class Meta:
+        model = UserGroup
+        fields = "__all__"
+
+class GroupInfoView(APIView):
+    authentication_classes = []
+    permission_classes =  []
+    throttle_classes = []
+    # versioning_class = []
+    # parser_classes = []
+    def get(self,*args,**kwargs):
+        gp_id = kwargs.get("xxx")
+        obj = UserGroup.objects.filter(pk=gp_id).first()
+        ret_data = GroupSerialize(instance=obj, many=False)
+        ret = json.dumps(ret_data.data,ensure_ascii=False)
         return HttpResponse(ret)

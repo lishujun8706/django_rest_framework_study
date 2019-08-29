@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'auth/test/$',views.TestView.as_view()),
     url(r'auth/role/$',views.RoleView.as_view()),
     url(r'auth/userinfo/$',views.UserInfoView.as_view()),
+    url(r'auth/group/(?P<xxx>\d+)$', views.GroupInfoView.as_view(),name='group_link'),
 ]
