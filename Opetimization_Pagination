@@ -1,0 +1,66 @@
+# 需要在博客做一个分页的功能，网上很多资料都说用Paginator类来实现。可是看了一些例子，觉得这种分页方式在数据量非常大的情况下，效率会变得非常低下。
+#
+# 例如博客（http: // xiaobin268.iteye.com / blog / 391237）中用到下面这个方法：
+#
+# def list(request):
+#     after_range_num = 5
+#     bevor_range_num = 4
+#     try:
+#         page = int(request.GET.get("page", 1))
+#         print('page----->', page)
+#         if page < 1:
+#             page = 1
+#     except ValueError:
+#         page = 1
+#
+#     info = Article.objects.order_by('id').all()
+#     paginator = Paginator(info, 3)
+#
+#     try:
+#         articleList = paginator.page(page)
+#     except(EmptyPage, InvalidPage, PageNotAnInteger):
+#         articleList = paginator.page(1)
+#     print('articleList---->', articleList.object_list)
+#     # 显示范围
+#     if page >= after_range_num:
+#         page_range = paginator.page_range[page - after_range_num:page + bevor_range_num]
+#     else:
+#         page_range = paginator.page_range[0:int(page) + bevor_range_num]
+#     return render_to_response("blogsite/list.html", locals())
+#
+#
+# 这样只要每次点击【下一页】或者【上一页】就要执行
+# Article.objects.all()，而这个方法是从数据库把所有记录取出来。
+# 试着想一想，假如数据库中有100000条记录，每一页只显示10条记录的话，那么当我点击【下一页】的时候，只为了看10条记录就要把100000条数据查询出来再进行分页。如果有很多用户同时访问网站，都点击了【下一页】，而且点击下一页的速度很快。。。那么，数据库还不得过劳死呀？
+#
+#
+#
+# 所以，为了数据库身体着想，本文将介绍一种比上文效率高很多的方法来减轻数据库的负担。
+#
+# 首先，如果一页只需要显示20条数据，那么我们只需要从数据库查询20条记录即可，像这样：
+#
+# 获得第一页的数据：
+#
+#
+# posts = BlogPost.objects.all()[0:20]
+#
+# 获得第二页的数据：
+#
+# posts = BlogPost.objects.all()[20:40]
+#
+# 第三页之后的数据获取方式以此类推。
+#
+#
+# 这种方式与以下这种方式是不同的：
+#
+#
+# posts = BlogPost.objects.all()
+# posts = posts[0:20]
+#
+# 前者利用QuerySets的惰性，这意味着只在对数据库进行求值之后才会对它们执行查询，这比立即查询的速度更快。这种惰性利用python的分片功能，BlogPost.objects.all()[0:20]
+# 在实际查询中用0作为offset，20
+# 作为limit，这样的查询可以极大提高查询性能。参考博文（http: // www.redicecn.com / html / blog / Django / 2011 / 0502 / 268.
+# html）
+# 而后者BlogPost.objects.all()
+# 是先从数据库中将所有数据查询出来，然后再posts[0:20]
+# 进行分片，这简直太浪费电了，太不环保了。
