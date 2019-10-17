@@ -1,0 +1,82 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
+        <link rel="stylesheet" type="text/css" href="/static/css/jquery-ui.css">
+        <link rel="stylesheet" type="text/css" href="/static/js/lib/themes/metro/blue/jtable.min.css">
+        <style tyle="text/css">
+            div.filtering
+            {
+                border: 1px solid #999;
+                margin-bottom: 5px;
+                padding: 10px;
+                background-color: #EEE;
+            }
+
+            form{
+                margin-bottom: 0px;
+            }
+
+            .jtable-column-header-text{
+                font-size: 9;
+            }
+
+            #table_div{
+                height:75%;
+                overflow-x: scroll;
+                overflow-y:scroll;
+            }
+
+            .filtering{
+                height:auto;
+            }
+
+            .navbar,.navbar-default{
+                height: 8%;
+            }
+            /* table{
+                table-layout: fixed;
+                border-collapse:collapse;
+                width: 100%;
+            } */
+            td{
+                font-size:8;
+                /* white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 80px; */
+            }
+            select{
+                color:black;
+            }
+        </style>
+        <script src="/static/js/jquery_3_4_1.js"></script>
+        <script src="/static/js/bootstrap.js"></script>
+        <script src="/static/js/jquery-ui.js"></script>
+        <script src="/static/js/jquery.jtable.js"></script>
+        <script src="/static/js/index.js"></script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <nav class="navbar navbar-default">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#" style="font-size: 24px;color:darkcyan">AI Triage System</a>
+                </div>
+            </nav>
+
+            <div class="filtering">
+                <form>
+                    <!-- SP_Name: <input type="text" name="sp" id="sp" /> -->
+                    SP_Name:
+                    <select id="sp" name="sp">
+                        <option value="" style="display: none;" disabled selected>Select SP...</option>
+                    </select>
+                    <button type="submit" id="LoadRecordsButton">Submit</button>
+                </form>
+            </div>
+            <div id="table_div"></div>
+        </div>
+    </body>
+</html>
